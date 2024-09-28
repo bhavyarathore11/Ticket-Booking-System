@@ -19,9 +19,28 @@
             color: #333;
         }
 
+        /* Navigation bar */
+        .navbar {
+            background-color: #333;
+            padding: 15px;
+            text-align: center;
+            color: white;
+        }
+
+        .navbar a {
+            color: white;
+            margin: 0 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
         /* Hero section */
         .hero {
-            background-image: url('https://i.imgur.com/U8PejXt.jpg'); /* Example banner image */
+            background-image: url('https://multiqos.com/blogs/wp-content/uploads/2021/09/How-to-Develop-an-Online-Movie-Ticket-Booking-App-like-BookMyShow.jpg');
             background-size: cover;
             background-position: center;
             height: 400px;
@@ -65,6 +84,7 @@
             overflow: hidden;
             width: 300px;
             transition: transform 0.2s ease;
+            cursor: pointer;
         }
 
         .event-card:hover {
@@ -130,20 +150,53 @@
             background-color: #e73370;
         }
 
+        /* Theater seating grid */
+        .seats-section {
+            margin-top: 30px;
+        }
+
+        .seats {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+        }
+
+        .seat {
+            padding: 10px;
+            background-color: #ccc;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .seat.selected {
+            background-color: #ff4081;
+            color: white;
+        }
+
+        .seat:hover {
+            background-color: #ff7b9f;
+        }
+
         /* Footer */
         footer {
             text-align: center;
             padding: 20px;
             background-color: #333;
             color: white;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
         }
     </style>
 </head>
 
 <body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="#">Home</a>
+        <a href="#">Ticket Booking</a>
+        <a href="#">Profile</a>
+        <a href="#">Account</a>
+    </nav>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -158,23 +211,29 @@
         <h2>Popular Events</h2>
         <div class="events">
             <!-- Event 1 -->
-            <div class="event-card">
-                <img src="https://i.imgur.com/8vG5e8S.jpg" alt="Event 1">
+            <div class="event-card" onclick="selectEvent('Concert Night')">
+                <img src="https://pbs.twimg.com/media/DI2uv6IV4AA3Qzo.jpg" alt="Event 1">
                 <h3>Concert Night</h3>
                 <p>Experience the best music live in your city.</p>
             </div>
 
             <!-- Event 2 -->
-            <div class="event-card">
-                <img src="https://i.imgur.com/bI58nT3.jpg" alt="Event 2">
+            <div class="event-card" onclick="selectEvent('Stand-Up Comedy')">
+                <img src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC/et00355125-wvlzfmqeej-portrait.jpg" alt="Event 2">
                 <h3>Stand-Up Comedy</h3>
                 <p>Laugh out loud with top comedians in the town.</p>
             </div>
 
             <!-- Event 3 -->
-            <div class="event-card">
-                <img src="https://i.imgur.com/ZF6BXur.jpg" alt="Event 3">
+            <div class="event-card" onclick="selectEvent('Movie Premiere')">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRN0bs4AQ0XDrmVjkbhxptnV1xj3RPeWE3QiQ&s" alt="Event 3">
                 <h3>Movie Premiere</h3>
+                <p>Catch the latest blockbuster before everyone else.</p>
+            </div>
+            <!-- Event 4 -->
+            <div class="event-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BMTA1NmUxYzItZmVmNy00YmQxLTk4Y2UtZjVkMWUwMWQ5N2IxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Event 3">
+                <h3>most watched movie </h3>
                 <p>Catch the latest blockbuster before everyone else.</p>
             </div>
         </div>
@@ -184,7 +243,7 @@
     <section class="form-section">
         <h2>Book Tickets</h2>
         <form id="bookingForm">
-            <label for="event">Select Event:</label>
+            <label for="event">Selected Event:</label>
             <select id="event" name="event_name" required>
                 <option value="">Select an Event</option>
                 <option value="Concert Night">Concert Night</option>
@@ -201,26 +260,57 @@
         <p id="message"></p>
     </section>
 
+    <!-- Seats Selection Section (after booking confirmation) -->
+    <section class="seats-section" id="seatsSection" style="display: none;">
+        <h2>Select Your Seats</h2>
+        <div class="seats">
+            <div class="seat">A1</div>
+            <div class="seat">A2</div>
+            <div class="seat">A3</div>
+            <div class="seat">A4</div>
+            <div class="seat">A5</div>
+            <div class="seat">A6</div>
+            <div class="seat">A7</div>
+            <div class="seat">A8</div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer>
         <p>&copy; 2024 Book Your Show - All Rights Reserved</p>
     </footer>
 
-    <!-- Inline JavaScript for handling form submission -->
+    <!-- Inline JavaScript for handling form submission and seat selection -->
     <script>
         document.getElementById('bookingForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent form from submitting
 
             var eventName = document.getElementById('event').value;
-            var ticketCount = document.getElementById('tickets').value;
+            var tickets = document.getElementById('tickets').value;
 
-            if (eventName === '' || ticketCount === '' || ticketCount <= 0) {
-                document.getElementById('message').innerText = 'Please select an event and provide valid ticket count.';
-            } else {
-                document.getElementById('message').innerText = 'Successfully booked ' + ticketCount + ' tickets for ' + eventName + '!';
+            if (eventName && tickets) {
+                document.getElementById('message').innerText = `You have successfully booked ${tickets} tickets for ${eventName}.`;
+
+                // Show seat selection after booking
+                document.getElementById('seatsSection').style.display = 'block';
             }
         });
+
+        // Seat selection interaction
+        document.querySelectorAll('.seat').forEach(seat => {
+            seat.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+
+        // Pre-select event on card click
+        function selectEvent(eventName) {
+            document.getElementById('event').value = eventName;
+            document.getElementById('message').innerText = ''; // Clear previous message
+            document.getElementById('seatsSection').style.display = 'none'; // Hide seat section
+        }
     </script>
+
 </body>
 
 </html>
